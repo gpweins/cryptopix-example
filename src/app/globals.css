@@ -15,7 +15,7 @@
   --color-border: #D6D2C4;
   --color-input: #F6F7F8;
   --color-ring: #FDDA24;
-  --color-destructive: #FF5733; /* Example */
+  --color-destructive: #FF5733;
   --color-destructive-foreground: #F6F7F8;
   --color-popover: #F6F7F8;
   --color-popover-foreground: #0F0F0F;
@@ -23,4 +23,12 @@
   --color-shadow-stellar: 0 10px 30px -10px rgba(253, 218, 36, 0.3);
   --color-shadow-glow: 0 0 20px rgba(253, 218, 36, 0.4);
   --color-gradient-stellar: linear-gradient(135deg, #FDDA24, #00A7B5);
+  --color-card: #FFFFFF;
+  --color-stellar-black: #0F0F0F;
+  --color-stellar-gray: #D6D2C4;
+  --color-stellar-white: #F6F7F8;
+  --color-stellar-gold: #FDDA24;
+  --color-stellar-lilac: #B7ACE8;
+  --color-stellar-teal: #00A7B5;
+  --color-stellar-navy: #002E5D;
 }
