@@ -16,6 +16,10 @@ const ConfirmPay = () => {
   const [amount, setAmount] = useState("")
   const [wallet, setWallet] = useState<string | null>(null)
 
+  /**
+   * Hook de efeito para carregar dados da transferência
+   * armazenados na sessionStorage ao montar o componente.
+   */
   useEffect(() => {
     const stored = sessionStorage.getItem("transferData")
     if (stored) {
@@ -26,14 +30,21 @@ const ConfirmPay = () => {
     }
   }, [])
 
+  /** Navega de volta para a tela inicial */
   const handleBack = () => router.push("/")
 
+  /**
+   * Realiza a transferência de valores usando Freighter e Stellar Testnet.
+   * Faz validação da carteira e amount, exibe toasts para feedback
+   * e navega de volta após conclusão.
+   */
   const handleTransferMoney = async () => {
     if (!wallet) return toast({ title: "Wallet not connected", variant: "destructive" })
 
     setLoading(true)
     toast({ title: "Processing transfer", description: `Transferring R$ ${amount} via Stellar Network` })
 
+    // Recupera chave pública de destino do arquivo .env.local
     const destPubKey = process.env.NEXT_PUBLIC_DESTINATION_WALLET;
     if (!destPubKey) {
       toast({
@@ -44,9 +55,11 @@ const ConfirmPay = () => {
       return;
     }
 
+    // Formata o valor para o padrão aceito pelo Stellar (string com ponto como separador decimal)
     const formattedAmount = amount.replace(/[^\d.,]/g, "").replace(",", ".");
 
     try {
+      // Envia o pagamento usando Stellar SDK + Freighter
       await sendTestnetPayment({
         senderPubKey: wallet,
         destPubKey,
@@ -65,7 +78,7 @@ const ConfirmPay = () => {
     <div className="min-h-screen bg-stellar-gray flex items-center justify-center p-4">
       <div className="w-full max-w-md mx-auto">
         <div className="bg-card rounded-2xl shadow-lg border border-border p-8 space-y-8">
-          {/* Header */}
+          {/* Cabeçalho */}
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="sm" onClick={handleBack} className="p-2 h-auto">
               <ArrowLeft className="w-5 h-5 text-foreground" />
@@ -73,7 +86,7 @@ const ConfirmPay = () => {
             <h1 className="text-xl font-semibold text-foreground">Confirm Pay</h1>
           </div>
 
-          {/* Recipient Info */}
+          {/* Informações do destinatário */}
           <div className="space-y-4">
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-2">Recipient</h2>
@@ -83,12 +96,12 @@ const ConfirmPay = () => {
               </p>
             </div>
 
-            {/* Amount */}
+            {/* Valor a ser transferido */}
             <div className="text-center py-6">
               <p className="text-4xl font-bold text-foreground">R$ {amount}</p>
             </div>
 
-            {/* Info Box */}
+            {/* Caixa de informações */}
             <div className="flex items-start space-x-2 p-4 bg-stellar-black/10 rounded-lg">
               <Info className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
               <p className="text-sm text-muted-foreground">
@@ -97,7 +110,7 @@ const ConfirmPay = () => {
             </div>
           </div>
 
-          {/* Action Button */}
+          {/* Botão de ação principal */}
           <div className="space-y-4">
             <Button
               variant="stellar"

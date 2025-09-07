@@ -12,6 +12,9 @@ import { ellipsis } from "@/lib/utils"
 import { connectFreighter } from "@/lib/wallet"
 
 const TransferMoney = () => {
+  /**
+   * Estados principais para armazenar chave Pix, valor, carteira e status de conexão
+   */
   const [pixKey, setPixKey] = useState("")
   const [amount, setAmount] = useState("")
   const [wallet, setWallet] = useState<string | null>(null)
@@ -20,7 +23,10 @@ const TransferMoney = () => {
   const { toast } = useToast()
   const router = useRouter()
 
-  // Connect wallet on mount
+  /**
+   * Hook de efeito para conectar a carteira Freighter
+   * assim que o componente é montado.
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -29,7 +35,7 @@ const TransferMoney = () => {
 
         const { address } = await connectFreighter()
         setWallet(address)
-        setSummWallet(ellipsis(address))
+        setSummWallet(ellipsis(address)) // Exibe endereço da carteira de forma abreviada
         setWalletReady(true)
       } catch {
         setWalletReady(false)
@@ -37,6 +43,10 @@ const TransferMoney = () => {
     })()
   }, [])
 
+  /**
+   * Pega o texto da área de transferência e
+   * atualiza o campo PIX key.
+   */
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText()
@@ -47,22 +57,30 @@ const TransferMoney = () => {
     }
   }
 
+  /**
+   * Valida os campos e salva os dados em sessionStorage,
+   * então navega para a tela ConfirmPay.
+   */
   const handleDone = () => {
     if (!pixKey.trim()) return toast({ title: "PIX key required", variant: "destructive" })
     if (!amount.trim()) return toast({ title: "Amount required", variant: "destructive" })
     if (!walletReady || !wallet) return toast({ title: "Wallet not connected", variant: "destructive" })
 
-    // Save in sessionStorage
+    // Salva os dados no sessionStorage (válidos apenas durante a sessão do navegador)
     sessionStorage.setItem("transferData", JSON.stringify({ pixKey, amount, wallet }))
 
-    // Navigate to confirm-pay
+    // Redireciona para a rota de confirmação
     router.push("/confirm-pay")
   }
 
+  /**
+   * Função placeholder para futura integração com QR code.
+   */
   const handleCameraScan = () => toast({ title: "Camera feature", description: "QR code scanning soon" })
 
   return (
     <div className="min-h-screen bg-stellar-gray flex items-center justify-center p-4 relative">
+      {/* Exibe overlay caso a carteira não esteja conectada */}
       {!walletReady && (
         <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-card p-6 rounded-xl shadow-lg text-center max-w-sm">
@@ -91,7 +109,7 @@ const TransferMoney = () => {
 
       <div className="w-full max-w-md mx-auto">
         <div className="bg-card rounded-2xl shadow-lg border border-border p-8 space-y-8">
-          {/* Header */}
+          {/* Cabeçalho da tela */}
           <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold text-foreground">Transfer money</h1>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -99,7 +117,7 @@ const TransferMoney = () => {
             </p>
           </div>
 
-          {/* Form */}
+          {/* Formulário principal */}
           <div className="space-y-3">
             <label htmlFor="pixKey" className="block text-sm font-medium text-foreground">Key Pix</label>
             <div className="relative">
@@ -136,13 +154,14 @@ const TransferMoney = () => {
               className="bg-card text-foreground border-border pr-20 h-12 rounded-xl placeholder:text-muted-foreground/60"
             />
 
+            {/* Exibe carteira conectada em versão resumida */}
             <div className="flex items-start space-x-2 p-4 bg-stellar-black/10 rounded-lg">
               <Info className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
               <p className="text-sm text-muted-foreground">Connected wallet: <br /> {summWallet}</p>
             </div>
           </div>
 
-          {/* Actions */}
+          {/* Botões de ação */}
           <div className="space-y-4">
             <Button className="w-full h-14 rounded-xl text-base font-medium" variant="stellar-secondary" size="lg" onClick={handleCameraScan} disabled={!walletReady}>
               <Camera className="w-5 h-5 mr-3" /> Use Camera Phone To Scan Code
