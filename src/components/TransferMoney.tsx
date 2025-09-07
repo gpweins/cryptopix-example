@@ -52,7 +52,11 @@ const TransferMoney = () => {
     if (!amount.trim()) return toast({ title: "Amount required", variant: "destructive" })
     if (!walletReady || !wallet) return toast({ title: "Wallet not connected", variant: "destructive" })
 
-    router.push(`/confirm-pay?pixKey=${encodeURIComponent(pixKey)}&amount=${encodeURIComponent(amount)}&wallet=${wallet}`)
+    // Save in sessionStorage
+    sessionStorage.setItem("transferData", JSON.stringify({ pixKey, amount, wallet }))
+
+    // Navigate to confirm-pay
+    router.push("/confirm-pay")
   }
 
   const handleCameraScan = () => toast({ title: "Camera feature", description: "QR code scanning soon" })

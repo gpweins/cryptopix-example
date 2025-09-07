@@ -1,21 +1,30 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, Info } from "lucide-react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { sendTestnetPayment } from "@/lib/payment"
 
 const ConfirmPay = () => {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
 
-  const pixKey = searchParams.get("pixKey") || "Key Pix here"
-  const amount = searchParams.get("amount") || "0"
-  const wallet = searchParams.get("wallet") || ""
+  const [pixKey, setPixKey] = useState("")
+  const [amount, setAmount] = useState("")
+  const [wallet, setWallet] = useState<string | null>(null)
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("transferData")
+    if (stored) {
+      const { pixKey, amount, wallet } = JSON.parse(stored)
+      setPixKey(pixKey)
+      setAmount(amount)
+      setWallet(wallet)
+    }
+  }, [])
 
   const handleBack = () => router.push("/")
 
